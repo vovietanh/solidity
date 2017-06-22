@@ -82,7 +82,6 @@ void CodeTransform::operator()(FunctionCall const& _call)
 
 	if (m_julia && m_builtinFunctions.count(_call.functionName.name))
 	{
-		m_assembly.setSourceLocation(_call.location);
 		for (auto const& arg: _call.arguments | boost::adaptors::reversed)
 			visitExpression(arg);
 		m_assembly.appendInstruction(m_builtinFunctions.at(_call.functionName.name));
@@ -207,6 +206,29 @@ void CodeTransform::operator()(assembly::Literal const& _literal)
 	checkStackHeight(&_literal);
 }
 
+CodeTransform::CodeTransform(
+	AbstractAssembly& _assembly,
+	AsmAnalysisInfo& _analysisInfo,
+	bool _julia,
+	bool _evm15,
+	ExternalIdentifierAccess const& _identifierAccess,
+	int _stackAdjustment,
+	std::shared_ptr<CodeTransform::Context> _context
+):
+	m_assembly(_assembly),
+	m_info(_analysisInfo),
+	m_julia(_julia),
+	m_evm15(_evm15),
+	m_identifierAccess(_identifierAccess),
+	m_stackAdjustment(_stackAdjustment),
+	m_context(_context)
+{
+	m_builtinFunctions["abort"] = solidity::Instruction::INVALID;
+	m_builtinFunctions["discardu256"] = solidity::Instruction::POP;
+	m_builtinFunctions["mulu256"] = solidity::Instruction::MUL;
+	m_builtinFunctions["divu256"] = solidity::Instruction::DIV;
+}
+
 void CodeTransform::operator()(assembly::Instruction const& _instruction)
 {
 	solAssert(!m_evm15 || _instruction.instruction != solidity::Instruction::JUMP, "Bare JUMP instruction used for EVM1.5");
@@ -305,7 +327,7 @@ void CodeTransform::operator()(FunctionDefinition const& _function)
 		m_assembly.appendConstant(u256(0));
 	}
 
-	CodeTransform(m_assembly, m_info, m_evm15, m_identifierAccess, localStackAdjustment, m_context)
+	CodeTransform(m_assembly, m_info, m_julia, m_evm15, m_identifierAccess, localStackAdjustment, m_context)
 		(_function.body);
 
 	{
