@@ -6119,6 +6119,74 @@ BOOST_AUTO_TEST_CASE(shadowing_warning_can_be_removed)
 	CHECK_SUCCESS_NO_WARNINGS(text);
 }
 
+BOOST_AUTO_TEST_CASE(function_types_sig)
+{
+	char const* text = R"(
+		contract C {
+			function f() returns (uint) {
+				return f.sig;
+			}
+		}
+	)";
+	CHECK_ERROR(text, TypeError, "Member \"sig\" not found");
+	text = R"(
+		contract C {
+			function g() internal {
+			}
+			function f() returns (uint) {
+				return g.sig;
+			}
+		}
+	)";
+	CHECK_ERROR(text, TypeError, "Member \"sig\" not found");
+	text = R"(
+		contract C {
+			function f() returns (uint) {
+				function () g;
+				return g.sig;
+			}
+		}
+	)";
+	CHECK_ERROR(text, TypeError, "Member \"sig\" not found");
+	text = R"(
+		contract C {
+			function f() returns (uint) {
+				return this.f.sig;
+			}
+		}
+	)";
+	CHECK_SUCCESS_NO_WARNINGS(text);
+	text = R"(
+		contract C {
+			function f() external returns (uint) {
+				return this.f.sig;
+			}
+		}
+	)";
+	CHECK_SUCCESS_NO_WARNINGS(text);
+	text = R"(
+		contract C {
+			function h() external {
+			}
+			function f() external returns (uint) {
+				var g = this.h;
+				return g.sig;
+			}
+		}
+	)";
+	CHECK_SUCCESS_NO_WARNINGS(text);
+	text = R"(
+		contract C {
+			function h() external {
+			}
+			function f() external returns (uint) {
+				function () external g = this.h;
+				return g.sig;
+			}
+		}
+	)";
+	CHECK_SUCCESS_NO_WARNINGS(text);
+}
 
 BOOST_AUTO_TEST_SUITE_END()
 

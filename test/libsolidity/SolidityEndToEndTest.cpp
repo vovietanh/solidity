@@ -9631,6 +9631,19 @@ BOOST_AUTO_TEST_CASE(keccak256_assembly)
 	BOOST_CHECK(callContractFunction("i()") == fromHex("0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"));
 }
 
+BOOST_AUTO_TEST_CASE(function_types_sig)
+{
+	char const* sourceCode = R"(
+		contract C {
+			function f() returns (bytes4) {
+				return this.f.sig;
+			}
+		}
+	)";
+	compileAndRun(sourceCode, 0, "C");
+	BOOST_CHECK(callContractFunction("f()") == fromHex("0x26121ff0"));
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 }
