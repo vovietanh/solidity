@@ -1063,7 +1063,13 @@ bool ExpressionCompiler::visit(MemberAccess const& _memberAccess)
 			BOOST_THROW_EXCEPTION(InternalCompilerError() << errinfo_comment("Invalid member access to integer."));
 		break;
 	case Type::Category::Function:
-		solAssert(!!_memberAccess.expression().annotation().type->memberType(member),
+		if (member == "sig")
+		{
+			FunctionType const& type = dynamic_cast<FunctionType const&>(*_memberAccess.expression().annotation().type);
+			m_context << type.externalIdentifier();
+		}
+		else
+			solAssert(!!_memberAccess.expression().annotation().type->memberType(member),
 				 "Invalid member access to function.");
 		break;
 	case Type::Category::Magic:

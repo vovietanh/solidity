@@ -14,6 +14,7 @@ Features:
  * Inline Assembly: function definitions and function calls.
  * Type Checker: Warn about copies in storage that might overwrite unexpectedly.
  * Code Generator: Added the Whiskers template system.
+ * Code Generator: Added ``.sig`` member on external function types to retrieve their signature.
  * Remove obsolete Why3 output.
  * Type Checker: Enforce strict UTF-8 validation.
 
