@@ -121,19 +121,22 @@ void parsePrintCompare(string const& _source)
 
 }
 
-#define CHECK_ERROR(text, assemble, typ, substring) \
+#define CHECK_ERROR(text, assemble, typ, substring, warnings) \
 do \
 { \
-	Error err = expectError((text), (assemble), false); \
+	Error err = expectError((text), (assemble), warnings); \
 	BOOST_CHECK(err.type() == (Error::Type::typ)); \
 	BOOST_CHECK(searchErrorMessage(err, (substring))); \
 } while(0)
 
 #define CHECK_PARSE_ERROR(text, type, substring) \
-CHECK_ERROR(text, false, type, substring)
+CHECK_ERROR(text, false, type, substring, false)
+
+#define CHECK_PARSE_WARNING(text, type, substring) \
+CHECK_ERROR(text, false, type, substring, true)
 
 #define CHECK_ASSEMBLE_ERROR(text, type, substring) \
-CHECK_ERROR(text, true, type, substring)
+CHECK_ERROR(text, true, type, substring, false)
 
 
 
@@ -632,10 +635,10 @@ BOOST_AUTO_TEST_CASE(create2)
 
 BOOST_AUTO_TEST_CASE(jump_warning)
 {
-	CHECK_PARSE_ERROR("{ jump }", Warning, "Using jump instructions");
-	CHECK_PARSE_ERROR("{ jumpi }", Warning, "Using jump instructions");
-	CHECK_PARSE_ERROR("{ a: jump(a) }", Warning, "Using jump instructions");
-	CHECK_PARSE_ERROR("{ a: jumpi(a) }", Warning, "Using jump instructions");
+	CHECK_PARSE_WARNING("{ jump }", Warning, "Using jump instructions");
+	CHECK_PARSE_WARNING("{ jumpi }", Warning, "Using jump instructions");
+	CHECK_PARSE_WARNING("{ a: jump(a) }", Warning, "Using jump instructions");
+	CHECK_PARSE_WARNING("{ a: jumpi(a) }", Warning, "Using jump instructions");
 }
 
 BOOST_AUTO_TEST_SUITE_END()
