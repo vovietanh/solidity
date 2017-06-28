@@ -6124,34 +6124,34 @@ BOOST_AUTO_TEST_CASE(function_types_sig)
 	char const* text = R"(
 		contract C {
 			function f() returns (uint) {
-				return f.sig;
+				return f.selector;
 			}
 		}
 	)";
-	CHECK_ERROR(text, TypeError, "Member \"sig\" not found");
+	CHECK_ERROR(text, TypeError, "Member \"selector\" not found");
 	text = R"(
 		contract C {
 			function g() internal {
 			}
 			function f() returns (uint) {
-				return g.sig;
+				return g.selector;
 			}
 		}
 	)";
-	CHECK_ERROR(text, TypeError, "Member \"sig\" not found");
+	CHECK_ERROR(text, TypeError, "Member \"selector\" not found");
 	text = R"(
 		contract C {
 			function f() returns (uint) {
 				function () g;
-				return g.sig;
+				return g.selector;
 			}
 		}
 	)";
-	CHECK_ERROR(text, TypeError, "Member \"sig\" not found");
+	CHECK_ERROR(text, TypeError, "Member \"selector\" not found");
 	text = R"(
 		contract C {
 			function f() returns (uint) {
-				return this.f.sig;
+				return this.f.selector;
 			}
 		}
 	)";
@@ -6159,7 +6159,7 @@ BOOST_AUTO_TEST_CASE(function_types_sig)
 	text = R"(
 		contract C {
 			function f() external returns (uint) {
-				return this.f.sig;
+				return this.f.selector;
 			}
 		}
 	)";
@@ -6170,22 +6170,22 @@ BOOST_AUTO_TEST_CASE(function_types_sig)
 			}
 			function f() external returns (uint) {
 				var g = this.h;
-				return g.sig;
+				return g.selector;
 			}
 		}
 	)";
-	CHECK_ERROR(text, TypeError, "Member \"sig\" not found");
+	CHECK_ERROR(text, TypeError, "Member \"selector\" not found");
 	text = R"(
 		contract C {
 			function h() external {
 			}
 			function f() external returns (uint) {
 				function () external g = this.h;
-				return g.sig;
+				return g.selector;
 			}
 		}
 	)";
-	CHECK_ERROR(text, TypeError, "Member \"sig\" not found");
+	CHECK_ERROR(text, TypeError, "Member \"selector\" not found");
 }
 
 BOOST_AUTO_TEST_SUITE_END()
