@@ -2507,6 +2507,9 @@ string FunctionType::externalSignature() const
 {
 	solAssert(m_declaration != nullptr, "External signature of function needs declaration");
 
+	if (m_declaration->name().empty())
+		return string();
+
 	bool _inLibrary = dynamic_cast<ContractDefinition const&>(*m_declaration->scope()).isLibrary();
 
 	string ret = m_declaration->name() + "(";
